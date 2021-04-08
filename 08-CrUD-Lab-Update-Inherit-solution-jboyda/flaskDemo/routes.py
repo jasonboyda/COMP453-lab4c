@@ -223,30 +223,34 @@ def assign():
 
     if form.validate_on_submit():          # notice we are are not passing the dnumber from the form
         if form.submit.data:
-            found = Works_On.query.filter(Works_On.essn == form.employees.data, Works_On.pno == form.projects.data).first()
-            if found:
-                flash(u'Employee already assigned to project', category='danger')
-                return redirect(url_for('assign'))
-            works = Works_On(pno=form.projects.data,essn=form.employees.data,hours=0)
-            db.session.add(works)
-            db.session.commit()
-            flash('Successfully added assignment', 'success')
+           return redirect(url_for('assign_employee', pnumber=form.projects.data, ssn=form.employees.data), code=307)
         elif form.remove.data:
-            found = Works_On.query.filter(Works_On.essn == form.employees.data, Works_On.pno == form.projects.data).first()
-            if not found:
-                flash(u'Employee not assigned to project', 'danger')
-                return redirect(url_for('assign'))
-            row = Works_On.query.filter(Works_On.essn == form.employees.data, Works_On.pno == form.projects.data).first()
-            db.session.delete(row)
-            db.session.commit()
-            flash('Successfully removed assignement', 'success')
-        return redirect(url_for('project'))
+            return redirect(url_for('remove_employee', pnumber=form.projects.data, ssn=form.employees.data), code=307)
 
     return render_template('assign.html', title="Assign", form=form)
 
+@app.route("/project/<pnumber>/assign-emp/<ssn>", methods=['POST'])
+@login_required
+def assign_employee(pnumber, ssn):
+    found = Works_On.query.filter(Works_On.essn == ssn, Works_On.pno == pnumber).first()
+    if found:
+        flash(u'Employee already assigned to project', category='danger')
+        return redirect(url_for('assign'))
+    works = Works_On(pno=pnumber,essn=ssn,hours=0)
+    db.session.add(works)
+    db.session.commit()
+    flash('Successfully added assignment', 'success')
+    return redirect(url_for('project'))
 
 @app.route("/project/<pnumber>/remove-emp/<ssn>", methods=['POST'])
 @login_required
 def remove_employee(pnumber, ssn):
-    print(ssn)
+    found = Works_On.query.filter(Works_On.essn == ssn, Works_On.pno == pnumber).first()
+    if not found:
+        flash(u'Employee not assigned to project', 'danger')
+        return redirect(url_for('assign'))
+    row = Works_On.query.filter(Works_On.essn == ssn, Works_On.pno == pnumber).first()
+    db.session.delete(row)
+    db.session.commit()
+    flash('Successfully removed assignement', 'success')
     return redirect(url_for('project'))
