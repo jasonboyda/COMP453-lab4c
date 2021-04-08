@@ -1,0 +1,20 @@
+{% extends "layout.html" %}
+{% block content %}
+    <article class="media content-section">
+        <div class="media-body">
+            <div class="article-metadata">
+                <a class="mr-2" href="#">{{ project[0].pname }} </a>
+                <small class="text-muted">{{ project[0].pno }}</small>
+                <div>
+                    <a class="btn btn-secondary btn-sm mt-1 mb-1" href="#">Assign</a>
+                    <button type="button" class="btn btn-danger btn-sm m-1" data-toggle="modal" data-target="#deleteModal">Remove</button>
+                  </div>
+            </div>
+            <div>
+                {% for emp in project %}
+                    <small class="text-muted">{{ emp.fname }} {{ emp.minit }}. {{ emp.lname }}</small><br>
+                {% endfor %}
+            </div>
+        </div>
+    </article>
+{% endblock content %}
