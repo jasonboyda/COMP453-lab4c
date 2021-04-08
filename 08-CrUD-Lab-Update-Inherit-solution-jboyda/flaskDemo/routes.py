@@ -223,15 +223,23 @@ def assign():
 
     if form.validate_on_submit():          # notice we are are not passing the dnumber from the form
         if form.submit.data:
+            found = Works_On.query.filter(Works_On.essn == form.employees.data, Works_On.pno == form.projects.data).first()
+            if found:
+                flash(u'Employee already assigned to project', category='danger')
+                return redirect(url_for('assign'))
             works = Works_On(pno=form.projects.data,essn=form.employees.data,hours=0)
             db.session.add(works)
             db.session.commit()
-            flash('Successfully added assignment', 'Success')
+            flash('Successfully added assignment', 'success')
         elif form.remove.data:
+            found = Works_On.query.filter(Works_On.essn == form.employees.data, Works_On.pno == form.projects.data).first()
+            if not found:
+                flash(u'Employee not assigned to project', 'danger')
+                return redirect(url_for('assign'))
             row = Works_On.query.filter(Works_On.essn == form.employees.data, Works_On.pno == form.projects.data).first()
             db.session.delete(row)
             db.session.commit()
-            flash('Successfully removed assignement', 'Success')
+            flash('Successfully removed assignement', 'success')
         return redirect(url_for('project'))
 
     return render_template('assign.html', title="Assign", form=form)
