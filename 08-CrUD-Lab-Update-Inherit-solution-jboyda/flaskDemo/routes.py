@@ -222,10 +222,16 @@ def assign():
     form.projects.choices = projects
 
     if form.validate_on_submit():          # notice we are are not passing the dnumber from the form
-        works = Works_On(pno=form.projects.data,essn=form.employees.data,hours=0)
-        db.session.add(works)
-        db.session.commit()
-        flash('Successfully added assignment', 'Success')
+        if form.submit.data:
+            works = Works_On(pno=form.projects.data,essn=form.employees.data,hours=0)
+            db.session.add(works)
+            db.session.commit()
+            flash('Successfully added assignment', 'Success')
+        elif form.remove.data:
+            row = Works_On.query.filter(Works_On.essn == form.employees.data, Works_On.pno == form.projects.data).first()
+            db.session.delete(row)
+            db.session.commit()
+            flash('Successfully removed assignement', 'Success')
         return redirect(url_for('project'))
 
     return render_template('assign.html', title="Assign", form=form)

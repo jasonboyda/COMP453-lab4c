@@ -63,6 +63,7 @@ class AssignForm(FlaskForm):
     projects = SelectField('Projects')
     pno = HiddenField("")
     submit = SubmitField('Assign')
+    remove = SubmitField('Remove')
 
 
 class RemoveEmployee(FlaskForm):
